@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Flashcards</string>
+    <string name="newFlashcard">ADD NEW FLASHCARD</string>
+    <string name="startQuiz">START FLASHCARDS QUIZ</string>
+    <string name="add_question_here">Add Question here:</string>
+    <string name="question">Question</string>
+    <string name="add_answer_here">Add Answer here</string>
+    <string name="change_a_flashcard">CHANGE A FLASHCARD</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="newFoldertextview">Please enter a Foldername:</string>
+    <string name="startQ">start Quiz</string>
+    <string name="stardardelo">1200</string>
+    <string name="current_elo">Current Elo:</string>
+    <string name="ques">Question:</string>
+    <string name="show_answer">show answer</string>
+    <string name="next_answer">next answer</string>
+    <string name="answer">Answer:</string>
+    <string name="elo_of_question">Elo of Question:</string>
+    <string name="unsolved">Unsolved</string>
+    <string name="solved">Solved</string>
+</resources>
