@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class Database extends SQLiteOpenHelper {
     private final String QuestionFolder = "QuestionFolder";
     private final String FolderTable = "Folder";
     private final String FolderPrimary = "FolderID";
+    private final String Elo = "Elo";
+    private final String Solved = "Solved";
     private final String FolderName = "FolderName";
 
     public static synchronized Database getInstance(Context context){
@@ -42,7 +45,8 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createFolder = "CREATE TABLE " + FolderTable + " (" + FolderPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FolderName + " VARCHAR(255));";
-        String createQuestion = "CREATE TABLE " + QuestionTable + " (" + QuestionPrimaty + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QuestionText + " TEXT, " + QuestionFolder + " INTEGER);";
+        String createQuestion = "CREATE TABLE " + QuestionTable + " (" + QuestionPrimaty + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QuestionText + " TEXT, "
+                + Elo + " INTEGER, " + Solved + " INTEGER, " + QuestionFolder + " INTEGER);";
         String createAnswer = "CREATE TABLE " + AnswerTable + " (" + AnswerPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + AnswerText + " TEXT, " + AnswerFolder + " INTEGER);";
         db.beginTransaction();
         try{
@@ -78,11 +82,15 @@ public class Database extends SQLiteOpenHelper {
         String Row = null;
         String question = null;
         String answer = null;
+        int Elo = EloCalculator.default_elo;
+        boolean Solved = false;
 
-        Cursor cursorQuestion = db.rawQuery("SELECT * FROM " + QuestionTable + " WHERE " + FolderID + " = " + QuestionFolder + " ORDER BY RANDOM() LIMIT 1;", null);
+        Cursor cursorQuestion = db.rawQuery("SELECT * FROM " + QuestionTable + " WHERE " + FolderID + " = " + QuestionFolder + " AND " + Solved + " = 0 " + " ORDER BY RANDOM() LIMIT 1;", null);
         while(cursorQuestion.moveToNext()){
             Row = cursorQuestion.getString(0);
             question = cursorQuestion.getString(1);
+            Elo = cursorQuestion.getInt(2);
+            Solved = (0 != cursorQuestion.getInt(3));
         }
 
         Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary +" = " + Row, null);
@@ -102,7 +110,46 @@ public class Database extends SQLiteOpenHelper {
             Row = "0";
         }
 
-        return new FlashCard(question,  answer, Integer.valueOf(Row));
+        return new FlashCard(question,  answer, Integer.valueOf(Row), Elo, Solved);
+    }
+
+    public void changeSolved(int primary, boolean solved){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int  iSolved = solved ? 1 : 0;
+        String update = "UPDATE " + QuestionTable + " SET " + Solved + " = " + iSolved + " WHERE " + QuestionPrimaty + " = " + primary;
+
+        db.execSQL(update);
+        db.close();
+    }
+
+    public void ChangeElo(int eloWinner, int eloLoser, int primaryWinner, int primaryLoser){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int winnerElo = EloCalculator.default_elo;
+        int loserElo = EloCalculator.default_elo;
+
+        String getEloWinner = "SELECT * FROM " + QuestionTable + " WHERE " + primaryWinner + " = " + QuestionPrimaty;
+        String getEloLoser = "SELECT * FROM " + QuestionTable + " WHERE " + primaryLoser + " = " + QuestionPrimaty;
+
+        Cursor winnerCurs = db.rawQuery(getEloWinner, null);
+        Cursor loserCurs = db.rawQuery(getEloLoser, null);
+        if(winnerCurs.moveToFirst()){
+            winnerElo =  winnerCurs.getInt(2);
+        }
+        if(loserCurs.moveToFirst()){
+            loserElo = winnerCurs.getInt(2);
+        }
+
+        winnerElo = EloCalculator.calculateWinner(winnerElo, loserElo);
+        loserElo = EloCalculator.calculateLoser(loserElo, winnerElo);
+
+        String updateWinner = "UPDATE " + QuestionTable + " SET " + Elo + " = " + winnerElo + " WHERE " + QuestionPrimaty + " = " + primaryWinner;
+        String updateLoser = "UPDATE " + QuestionTable + " SET " + Elo + " = " + loserElo + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
+        db.execSQL(updateWinner);
+        db.execSQL(updateLoser);
+
+        db.close();
     }
 
     public ArrayList<FlashCard> getAllFlashCardsOfTable(int folderId){
@@ -113,11 +160,15 @@ public class Database extends SQLiteOpenHelper {
         String Row = null;
         String question = null;
         String answer = null;
+        int Elo = EloCalculator.default_elo;
+        boolean Solved = false;
 
         Cursor cursorQuestion = db.rawQuery("SELECT * FROM " + QuestionTable + " WHERE " + QuestionFolder + " = " + folderId, null);
         while(cursorQuestion.moveToNext()){
             Row = cursorQuestion.getString(0);
             question = cursorQuestion.getString(1);
+            Elo = cursorQuestion.getInt(2);
+            Solved = (0 != cursorQuestion.getInt(3));
 
             Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary +" = " + Row, null);
             while(cursorAnswer.moveToNext()){
@@ -135,7 +186,7 @@ public class Database extends SQLiteOpenHelper {
                 Row = "0";
             }
 
-            FlashCard fl = new FlashCard(question, answer, Integer.valueOf(Row));
+            FlashCard fl = new FlashCard(question, answer, Integer.valueOf(Row), Elo, Solved);
             flashcards.add(fl);
         }
 
@@ -158,6 +209,8 @@ public class Database extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(QuestionText, question);
+        values.put(Elo, EloCalculator.default_elo);
+        values.put(Solved, 0);
         values.put(QuestionFolder, currentFolder);
         db.insert(QuestionTable, null, values);
         ContentValues values2 = new ContentValues();
@@ -205,6 +258,8 @@ public class Database extends SQLiteOpenHelper {
         Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary + " = " + PrimaryKey, null);
         String question = null;
         String answer = null;
+        int Elo = 1200;
+        boolean Solved = false;
 
         while(cursorAnswer.moveToNext()){
             answer = cursorAnswer.getString(1);
@@ -212,10 +267,12 @@ public class Database extends SQLiteOpenHelper {
 
         while(cursorQuestion.moveToNext()){
             question = cursorQuestion.getString(1);
+            Elo = cursorQuestion.getInt(2);
+            Solved = (0 != cursorQuestion.getInt(3));
         }
 
         db.close();
-        return new FlashCard(question, answer, PrimaryKey);
+        return new FlashCard(question, answer, PrimaryKey, Elo, Solved);
     }
 
     public ArrayList<Integer> getAllFolderPrimary(){
