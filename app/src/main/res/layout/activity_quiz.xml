@@ -6,7 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".QuizActivity">
 
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
+
     <LinearLayout
+        android:layout_below="@id/toolbar"
         android:id="@+id/linearlayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

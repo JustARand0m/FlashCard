@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 public class FlashcardsActivity extends AppCompatActivity {
@@ -15,6 +16,12 @@ public class FlashcardsActivity extends AppCompatActivity {
     private static RecyclerView.Adapter mAdapter;
     private int pos;
     public static final int FLASCHARD_RESULT = 1;
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +38,11 @@ public class FlashcardsActivity extends AppCompatActivity {
         mAdapter = new FlashcardAdapter(this, pos);
         mRecyclerView.setAdapter(mAdapter);
 
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
     }
 
     public static void notifyChange(){

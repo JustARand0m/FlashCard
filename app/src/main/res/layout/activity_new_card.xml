@@ -7,6 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".FlashcardsAddActivity">
 
+   <include layout="@layout/toolbar"
+       android:id="@+id/toolbar"/>
+
     <TextView
         android:layout_width="match_parent"
         android:text="@string/add_question_here"

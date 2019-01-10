@@ -30,6 +30,8 @@ public class Database extends SQLiteOpenHelper {
     private final String Elo = "Elo";
     private final String Solved = "Solved";
     private final String FolderName = "FolderName";
+    private final String UserEloTable = "UserEloTable";
+    private final String UserElo = "UserElo";
 
     public static synchronized Database getInstance(Context context){
         if(dInstance == null){
@@ -48,11 +50,18 @@ public class Database extends SQLiteOpenHelper {
         String createQuestion = "CREATE TABLE " + QuestionTable + " (" + QuestionPrimaty + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QuestionText + " TEXT, "
                 + Elo + " INTEGER, " + Solved + " INTEGER, " + QuestionFolder + " INTEGER);";
         String createAnswer = "CREATE TABLE " + AnswerTable + " (" + AnswerPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + AnswerText + " TEXT, " + AnswerFolder + " INTEGER);";
+        String createUserElo = "CREATE TABLE " + UserEloTable + " (" + UserElo + " INTEGER);";
+
+        ContentValues content = new ContentValues();
+        content.put(UserElo, EloCalculator.default_elo);
+
         db.beginTransaction();
         try{
             db.execSQL(createFolder);
             db.execSQL(createAnswer);
             db.execSQL(createQuestion);
+            db.execSQL(createUserElo);
+            db.insert(UserEloTable, null, content);
             db.setTransactionSuccessful();
         }finally {
             db.endTransaction();
@@ -60,16 +69,32 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
+    public int getUserElo(){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int elo = EloCalculator.default_elo;
+        String sql = "SELECT * FROM " + UserEloTable;
+        Cursor cr = db.rawQuery(sql, null);
+        if(cr.moveToFirst()){
+            elo = cr.getInt(0);
+        }
+
+        db.close();
+        return elo;
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String dropQuestion = "DROP TABLE IF EXISTS " + QuestionTable;
         String dropAnswer = "DROP TABLE IF EXISTS " + AnswerTable;
         String dropFolder = "DROP TABLE IF EXISTS " + FolderTable;
+        String dropUserElo = "DROP TABLE IF EXISTS "  + UserEloTable;
         db.beginTransaction();
         try{
             db.execSQL(dropFolder);
             db.execSQL(dropAnswer);
             db.execSQL(dropQuestion);
+            db.execSQL(dropUserElo);
         }finally {
             db.endTransaction();
         }
@@ -123,28 +148,28 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void ChangeElo(int eloWinner, int eloLoser, int primaryWinner, int primaryLoser){
+    public void ChangeEloUserWinner(int primaryLoser){
         SQLiteDatabase db = this.getWritableDatabase();
 
         int winnerElo = EloCalculator.default_elo;
         int loserElo = EloCalculator.default_elo;
 
-        String getEloWinner = "SELECT * FROM " + QuestionTable + " WHERE " + primaryWinner + " = " + QuestionPrimaty;
-        String getEloLoser = "SELECT * FROM " + QuestionTable + " WHERE " + primaryLoser + " = " + QuestionPrimaty;
+        String getEloWinner = "SELECT * FROM " + UserEloTable;
+        String getEloLoser = "SELECT * FROM " + QuestionTable + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
 
         Cursor winnerCurs = db.rawQuery(getEloWinner, null);
         Cursor loserCurs = db.rawQuery(getEloLoser, null);
         if(winnerCurs.moveToFirst()){
-            winnerElo =  winnerCurs.getInt(2);
+            winnerElo =  winnerCurs.getInt(0);
         }
         if(loserCurs.moveToFirst()){
-            loserElo = winnerCurs.getInt(2);
+            loserElo = loserCurs.getInt(2);
         }
 
         winnerElo = EloCalculator.calculateWinner(winnerElo, loserElo);
         loserElo = EloCalculator.calculateLoser(loserElo, winnerElo);
 
-        String updateWinner = "UPDATE " + QuestionTable + " SET " + Elo + " = " + winnerElo + " WHERE " + QuestionPrimaty + " = " + primaryWinner;
+        String updateWinner = "UPDATE " + UserEloTable + " SET " + UserElo + " = " + winnerElo;
         String updateLoser = "UPDATE " + QuestionTable + " SET " + Elo + " = " + loserElo + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
         db.execSQL(updateWinner);
         db.execSQL(updateLoser);

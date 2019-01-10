@@ -6,36 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".QuizSolutionActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayoutanswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="@string/elo_of_question"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/current_Elo2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="@string/stardardelo"
-            android:textSize="16sp" />
+   <include layout="@layout/toolbar"
+       android:id="@+id/toolbar"/>
 
 
-    </LinearLayout>
 
     <TextView
         android:id="@+id/answer_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayoutanswer"
+        android:layout_below="@id/toolbar"
         android:layout_margin="8dp"
         android:text="@string/answer" />
 

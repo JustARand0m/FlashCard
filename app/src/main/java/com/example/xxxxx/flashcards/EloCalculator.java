@@ -1,5 +1,9 @@
 package com.example.xxxxx.flashcards;
 
+import android.content.Context;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+
 public class EloCalculator {
     public static final int default_elo = 1200;
     private static final int factorK = 40;
@@ -13,6 +17,12 @@ public class EloCalculator {
     }
 
     public static int calculateLoser(int eloLoser, int eloWinner){
-        return (int) (eloWinner + factorK * (0 - ErwartungswertElo((double)eloLoser, (double)eloWinner)));
+        return (int) (eloLoser + factorK * (0 - ErwartungswertElo((double)eloLoser, (double)eloWinner)));
+    }
+
+    public static void setEloInToolbar(ActionBar toolbar, Context context){
+        Database database = Database.getInstance(context);
+        int elo = database.getUserElo();
+        toolbar.setTitle("Current Elo: " + Integer.toString(elo));
     }
 }
