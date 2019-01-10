@@ -24,10 +24,9 @@ public class QuizActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_CODE){
             if(resultCode == RESULT_OK){
-                //todo calculate new elo
-                //flag in Question as done
                 Database database = Database.getInstance(this);
                 database.ChangeEloUserWinner(flashCard.getIndex());
+                //check solved questions as solved
 
                 recreate();
             }
