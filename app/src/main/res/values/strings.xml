@@ -20,4 +20,5 @@
     <string name="unsolved">Unsolved</string>
     <string name="solved">Solved</string>
     <string name="plz_add_flashcard">please add some Flipcards first</string>
+    <string name="change">Change</string>
 </resources>

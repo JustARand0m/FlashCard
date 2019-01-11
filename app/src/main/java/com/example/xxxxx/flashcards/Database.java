@@ -357,4 +357,19 @@ public class Database extends SQLiteOpenHelper {
         return Folders;
     }
 
+
+    public boolean removeFolder(int folderID){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        boolean bQuestion = db.delete(QuestionTable, QuestionFolder + " = " + folderID, null) > 0;
+        boolean bAnswer = db.delete(AnswerTable, AnswerFolder + " = " + folderID, null) > 0;
+        boolean bFolder = db.delete(FolderTable, FolderPrimary + " = " + folderID, null) > 0;
+        if(!bFolder){
+            db.close();
+            return false;
+        }
+        db.close();
+        return true;
+    }
+
 }

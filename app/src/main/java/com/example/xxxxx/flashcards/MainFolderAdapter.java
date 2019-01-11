@@ -2,9 +2,13 @@ package com.example.xxxxx.flashcards;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,16 +55,19 @@ public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.My
         return Folders.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener{
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnCreateContextMenuListener{
         public int PrimaryKey;
         public TextView textFolderName;
         public MainFolderAdapter mAdapter;
+        private CardView cardView;
 
         public MyViewHolder(@NonNull View itemView, MainFolderAdapter adapter) {
             super(itemView);
+            cardView = itemView.findViewById(R.id.cardview_folder);
             textFolderName = itemView.findViewById(R.id.folder_name);
             this.mAdapter = adapter;
             itemView.setOnClickListener(this);
+            cardView.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -71,8 +78,20 @@ public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.My
         }
 
         @Override
-        public boolean onLongClick(View v) {
-            return false;
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Select an Option:");
+            menu.add(this.getAdapterPosition(), 121, 0, "Delete this item");
+            menu.add(this.getAdapterPosition(), 122, 1, "Change this item");
         }
+    }
+
+    public void removeItem(int position){
+        int key = Keys.get(position);
+        Keys.remove(position);
+        Folders.remove(position);
+        if(!db.removeFolder(key)){
+            Log.d("flashcard", "error in removing Folder");
+        }
+        notifyDataSetChanged();
     }
 }

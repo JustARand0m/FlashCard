@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,6 +25,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case 121:
+                mAdapter.removeItem(item.getGroupId());
+                return true;
+            case 122:
+
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     @Override
