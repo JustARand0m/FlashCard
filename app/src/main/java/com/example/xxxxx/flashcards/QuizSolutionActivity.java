@@ -11,6 +11,12 @@ public class QuizSolutionActivity extends AppCompatActivity {
     private String answer;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flashcard_solution);
@@ -21,7 +27,7 @@ public class QuizSolutionActivity extends AppCompatActivity {
         TextView textAnswer = findViewById(R.id.realAnswer);
         textAnswer.setText(answer);
 
-         Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         EloCalculator.setEloInToolbar(getSupportActionBar(), this);
     }

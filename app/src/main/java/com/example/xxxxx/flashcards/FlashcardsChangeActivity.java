@@ -1,17 +1,28 @@
 package com.example.xxxxx.flashcards;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class FlashcardsChangeActivity extends AppCompatActivity {
     private Database database;
+    private FlashCard fl;
     private int Position;
     private TextView textQuestion;
     private TextView textAnswer;
+    private RadioButton rbSolved;
+    private RadioButton rbUnsolved;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -32,9 +43,20 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
 
         textAnswer = findViewById(R.id.detail_answer);
         textQuestion = findViewById(R.id.detail_question);
-        FlashCard fl = database.getFlashcard(Position);
+        fl = database.getFlashcard(Position);
         textAnswer.setText(fl.getAnswer());
         textQuestion.setText(fl.getQuestion());
+
+        rbSolved = findViewById(R.id.radio_solved);
+        rbUnsolved = findViewById(R.id.radio_unsolved);
+
+        if(fl.getSolved()){
+            rbUnsolved.setChecked(false);
+            rbSolved.setChecked(true);
+        }else{
+            rbUnsolved.setChecked(true);
+            rbSolved.setChecked(false);
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -46,6 +68,12 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
     public void saveChanges(View view) {
         database.ChangeAnswer(Position, textAnswer.getText().toString());
         database.ChangeQuestion(Position, textQuestion.getText().toString());
+
+        if(rbSolved.isChecked()){
+            database.changeSolved(fl.getIndex(), true);
+        }else if(rbUnsolved.isChecked()){
+            database.changeSolved(fl.getIndex(), false);
+        }
 
         FlashcardsActivity.notifyChange();
         finish();

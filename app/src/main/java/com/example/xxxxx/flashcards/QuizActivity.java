@@ -7,12 +7,19 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
     private TextView textQuestion;
     private TextView textQuestionElo;
     private FlashCard flashCard;
     public static final int REQUEST_CODE = 1;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -23,15 +30,16 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_CODE){
+            Database database = Database.getInstance(this);
             if(resultCode == RESULT_OK){
-                Database database = Database.getInstance(this);
                 database.ChangeEloUserWinner(flashCard.getIndex());
-                //check solved questions as solved
+                database.changeSolved(flashCard.getIndex(), true);
 
                 recreate();
             }
             if(resultCode == RESULT_CANCELED){
-                //calulate new elo
+                database.ChangeEloUserLoser(flashCard.getIndex());
+
                 recreate();
 
             }
@@ -50,9 +58,13 @@ public class QuizActivity extends AppCompatActivity {
 
         Database db = Database.getInstance(this);
         flashCard = db.getRandomQuestion(pos);
-
-        textQuestion.setText(flashCard.getQuestion());
-        textQuestionElo.setText(Integer.toString(flashCard.getElo()));
+        if(flashCard.getIndex() == 0 && flashCard.getQuestion().equals(" ") && flashCard.getAnswer().equals(" ")){
+            Toast.makeText(this, getString(R.string.plz_add_flashcard), Toast.LENGTH_SHORT).show();
+            finish();
+        }else {
+            textQuestion.setText(flashCard.getQuestion());
+            textQuestionElo.setText(Integer.toString(flashCard.getElo()));
+        }
 
          Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

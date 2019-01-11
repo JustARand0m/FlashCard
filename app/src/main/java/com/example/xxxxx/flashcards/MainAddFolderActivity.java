@@ -15,6 +15,12 @@ public class MainAddFolderActivity extends AppCompatActivity {
     Database database;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;

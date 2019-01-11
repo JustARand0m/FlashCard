@@ -18,6 +18,12 @@ public class FlashcardsActivity extends AppCompatActivity {
     public static final int FLASCHARD_RESULT = 1;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        EloCalculator.setEloInToolbar(getSupportActionBar(), this);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;

@@ -18,17 +18,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:text="@string/ques"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/detail_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"/>
 
+    <TextView
+        android:text="@string/answer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/detail_answer"
         android:textSize="18sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/radio_unsolved"
+            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            android:text="@string/unsolved"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/radio_solved"
+            android:layout_width="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/solved"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
 
     <Button
         android:id="@+id/detail_finish"

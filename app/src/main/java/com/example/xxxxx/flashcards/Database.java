@@ -177,6 +177,36 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void ChangeEloUserLoser(int primaryLoser){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int winnerElo = EloCalculator.default_elo;
+        int loserElo = EloCalculator.default_elo;
+
+        String getEloLoser = "SELECT * FROM " + UserEloTable;
+        String getEloWinner = "SELECT * FROM " + QuestionTable + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
+
+        Cursor winnerCurs = db.rawQuery(getEloWinner, null);
+        Cursor loserCurs = db.rawQuery(getEloLoser, null);
+        if(winnerCurs.moveToFirst()){
+            winnerElo =  winnerCurs.getInt(2);
+        }
+        if(loserCurs.moveToFirst()){
+            loserElo = loserCurs.getInt(0);
+        }
+
+        winnerElo = EloCalculator.calculateWinner(winnerElo, loserElo);
+        loserElo = EloCalculator.calculateLoser(loserElo, winnerElo);
+
+        String updateLoser = "UPDATE " + UserEloTable + " SET " + UserElo + " = " + winnerElo;
+        String updateWinner = "UPDATE " + QuestionTable + " SET " + Elo + " = " + loserElo + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
+        db.execSQL(updateWinner);
+        db.execSQL(updateLoser);
+
+        db.close();
+    }
+
+
     public ArrayList<FlashCard> getAllFlashCardsOfTable(int folderId){
         SQLiteDatabase db = this.getWritableDatabase();
 

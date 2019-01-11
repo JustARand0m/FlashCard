@@ -19,6 +19,7 @@ public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.My
     private Database db;
     private Context mContext;
 
+
     public MainFolderAdapter(Context context){
         db = Database.getInstance(context);
         Keys = db.getAllFolderPrimary();
