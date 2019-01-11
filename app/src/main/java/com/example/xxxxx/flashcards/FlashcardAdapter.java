@@ -17,7 +17,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.MyVi
     private Database db;
     private Context mContext;
     private int FolderID;
-    private int CardID;
 
     public FlashcardAdapter(Context context, int Folder){
         db = Database.getInstance(context);
@@ -67,8 +66,6 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.MyVi
 
         @Override
         public void onClick(View v) {
-            int LayoutPos = getLayoutPosition();
-
             Intent intent = new Intent(mAdapter.mContext, FlashcardsChangeActivity.class);
             intent.putExtra("LayoutPos", CardID);
             mAdapter.mContext.startActivity(intent);

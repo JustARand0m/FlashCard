@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.MyViewHolder> {
+public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.MyViewHolder>{
     private LayoutInflater mInflater;
     private ArrayList<String> Folders;
     private ArrayList<Integer> Keys;
@@ -51,7 +51,7 @@ public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.My
         return Folders.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener{
         public int PrimaryKey;
         public TextView textFolderName;
         public MainFolderAdapter mAdapter;
@@ -68,6 +68,11 @@ public class MainFolderAdapter extends RecyclerView.Adapter<MainFolderAdapter.My
             Intent intent = new Intent(mAdapter.mContext, FlashcardsActivity.class);
             intent.putExtra("pos", PrimaryKey);
             mAdapter.mContext.startActivity(intent);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
         }
     }
 }
