@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -112,13 +113,20 @@ public class FlashcardsAddActivity extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(intent.resolveActivity(getPackageManager())!= null) {
             File photoFile = null;
+            Uri photoURI;
             try{
                 photoFile = createImageFile();
             }catch(IOException ex){
                 Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
             }
             if(photoFile != null){
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                }
+                else{
+                    photoURI = Uri.fromFile(photoFile);
+                }
+
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_IMAGE_ANSWER);
             }
@@ -129,13 +137,18 @@ public class FlashcardsAddActivity extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(intent.resolveActivity(getPackageManager())!= null) {
             File photoFile = null;
+            Uri photoURI;
             try{
                 photoFile = createImageFile();
             }catch(IOException ex){
                 Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
             }
             if(photoFile != null){
-                Uri photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                    photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                }else{
+                    photoURI = Uri.fromFile(photoFile);
+                }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(intent, REQUEST_IMAGE_QUESTION);
             }
