@@ -1,18 +1,41 @@
 package com.example.xxxxx.flashcards;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FlashcardsAddActivity extends AppCompatActivity {
     private EditText EditQuestion;
     private EditText EditAnswer;
+    private ImageView imageQuestion;
+    private ImageView imageAnswer;
     private String Answer;
     private String Question;
     private int FolderID;
+    private final int REQUEST_IMAGE_QUESTION = 0;
+    private final int REQUEST_IMAGE_ANSWER = 1;
+    String mCurrentPhotoPath;
 
     private Database database;
 
@@ -40,6 +63,8 @@ public class FlashcardsAddActivity extends AppCompatActivity {
 
        EditQuestion = findViewById(R.id.question);
        EditAnswer = findViewById(R.id.answer);
+       imageAnswer = findViewById(R.id.answer_image);
+       imageQuestion = findViewById(R.id.question_image);
 
        if(savedInstanceState != null){
            Question = savedInstanceState.getString("Question");
@@ -62,6 +87,36 @@ public class FlashcardsAddActivity extends AppCompatActivity {
         outState.putString("Answer", EditAnswer.getText().toString());
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
+            setPic(imageQuestion);
+        }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
+            setPic(imageAnswer);
+        }
+    }
+
+    private void setPic(ImageView imageView){
+        File f = new File(mCurrentPhotoPath);
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        imageView.setImageBitmap(bitmap);
+    }
+
     public void addContent(View view) {
         Question = EditQuestion.getText().toString();
         Answer = EditAnswer.getText().toString();
@@ -69,5 +124,55 @@ public class FlashcardsAddActivity extends AppCompatActivity {
 
         FlashcardsActivity.notifyChange();
         finish();
+    }
+
+    public void startAnswerFoto(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager())!= null) {
+            File photoFile = null;
+            try{
+                photoFile = createImageFile();
+            }catch(IOException ex){
+                Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
+            }
+            if(photoFile != null){
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(intent, REQUEST_IMAGE_ANSWER);
+            }
+        }
+    }
+
+    public void startQuestionFoto(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager())!= null) {
+            File photoFile = null;
+            try{
+                photoFile = createImageFile();
+            }catch(IOException ex){
+                Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
+            }
+            if(photoFile != null){
+                Uri photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(intent, REQUEST_IMAGE_QUESTION);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    public void startFullscreen(View view) {
+        Intent intent = new Intent(this, Fullscreen.class);
+        intent.putExtra("path" , mCurrentPhotoPath);
+        startActivity(intent);
     }
 }

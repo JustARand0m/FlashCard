@@ -198,8 +198,8 @@ public class Database extends SQLiteOpenHelper {
         winnerElo = EloCalculator.calculateWinner(winnerElo, loserElo);
         loserElo = EloCalculator.calculateLoser(loserElo, winnerElo);
 
-        String updateLoser = "UPDATE " + UserEloTable + " SET " + UserElo + " = " + winnerElo;
-        String updateWinner = "UPDATE " + QuestionTable + " SET " + Elo + " = " + loserElo + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
+        String updateLoser = "UPDATE " + UserEloTable + " SET " + UserElo + " = " + loserElo;
+        String updateWinner = "UPDATE " + QuestionTable + " SET " + Elo + " = " + winnerElo + " WHERE " + QuestionPrimaty + " = " + primaryLoser;
         db.execSQL(updateWinner);
         db.execSQL(updateLoser);
 

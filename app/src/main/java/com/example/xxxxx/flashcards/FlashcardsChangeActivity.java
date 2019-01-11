@@ -15,6 +15,7 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
     private int Position;
     private TextView textQuestion;
     private TextView textAnswer;
+    private TextView textElo;
     private RadioButton rbSolved;
     private RadioButton rbUnsolved;
 
@@ -42,10 +43,12 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
         Position = intent.getIntExtra("LayoutPos", 0);
 
         textAnswer = findViewById(R.id.detail_answer);
+        textElo = findViewById(R.id.detail_elo);
         textQuestion = findViewById(R.id.detail_question);
         fl = database.getFlashcard(Position);
         textAnswer.setText(fl.getAnswer());
         textQuestion.setText(fl.getQuestion());
+        textElo.setText(Integer.toString(fl.getElo()));
 
         rbSolved = findViewById(R.id.radio_solved);
         rbUnsolved = findViewById(R.id.radio_unsolved);

@@ -21,4 +21,6 @@
     <string name="solved">Solved</string>
     <string name="plz_add_flashcard">please add some Flipcards first</string>
     <string name="change">Change</string>
+    <string name="picture_of_question">Picture of Question</string>
+    <string name="picture_of_answer">Picture of Answer</string>
 </resources>

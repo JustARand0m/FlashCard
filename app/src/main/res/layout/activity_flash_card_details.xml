@@ -40,6 +40,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="@string/current_elo"
+            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/detail_elo"
+            android:layout_width="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/stardardelo"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
     <RadioGroup
         android:layout_width="match_parent"
         android:orientation="horizontal"

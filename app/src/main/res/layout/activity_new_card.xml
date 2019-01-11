@@ -1,41 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".FlashcardsAddActivity">
+    <LinearLayout
+        android:id="@+id/top_layout"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
-   <include layout="@layout/toolbar"
-       android:id="@+id/toolbar"/>
+       <include layout="@layout/toolbar"
+           android:id="@+id/toolbar"/>
 
-    <TextView
+        <TextView
+            android:layout_width="match_parent"
+            android:text="@string/add_question_here"
+            android:layout_margin="8dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/question"
+            android:layout_width="match_parent"
+            android:hint="@string/question"
+            android:layout_margin="8dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="@string/add_answer_here"
+            android:layout_margin="8dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/answer"
+            android:layout_width="match_parent"
+            android:layout_margin="8dp"
+            android:hint="Answer"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:text="@string/add_question_here"
+        android:orientation="horizontal"
+        android:layout_above="@id/bottom_layout"
+        android:layout_below="@id/top_layout"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:onClick="startFullscreen"
+            android:layout_margin="4dp"
+            android:scaleType="centerCrop"
+            android:id="@+id/question_image"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:layout_margin="4dp"
+            android:scaleType="centerCrop"
+            android:onClick="startFullscreen"
+            android:layout_weight="1"
+            android:id="@+id/answer_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_margin="8dp"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/question"
+        android:id="@+id/bottom_layout"
+        android:layout_above="@+id/bottom_button"
         android:layout_width="match_parent"
-        android:hint="@string/question"
-        android:layout_margin="8dp"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:layout_width="match_parent"
-        android:text="@string/add_answer_here"
-        android:layout_margin="8dp"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/answer"
-        android:layout_width="match_parent"
-        android:layout_margin="8dp"
-        android:hint="Answer"
-        android:layout_height="wrap_content" />
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="@string/picture_of_question"
+            android:onClick="startQuestionFoto"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <Button
+            android:text ="@string/picture_of_answer"
+            android:onClick="startAnswerFoto"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
     <Button
+        android:id="@+id/bottom_button"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_margin="8dp"
         android:text="Finish"
         android:onClick="addContent"
         android:layout_height="wrap_content" />
-</LinearLayout>
+</RelativeLayout>
