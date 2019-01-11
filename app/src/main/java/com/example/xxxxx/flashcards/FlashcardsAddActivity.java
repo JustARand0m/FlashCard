@@ -35,7 +35,7 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     private int FolderID;
     private final int REQUEST_IMAGE_QUESTION = 0;
     private final int REQUEST_IMAGE_ANSWER = 1;
-    String mCurrentPhotoPath;
+    private String mCurrentPhotoPath;
 
     private Database database;
 
@@ -91,8 +91,10 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
             Fullscreen.setPic(imageQuestion, mCurrentPhotoPath);
+            database.addPicturePath(mCurrentPhotoPath, 0);
         }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
             Fullscreen.setPic(imageAnswer, mCurrentPhotoPath);
+            database.addPicturePath(mCurrentPhotoPath, 1);
         }
     }
 

@@ -21,10 +21,12 @@ public class Database extends SQLiteOpenHelper {
     private final String AnswerPrimary = "AnswerID";
     private final String AnswerText = "AnswerText";
     private final String AnswerFolder = "AnswerFolder";
+    private final String AnswerPicture = "AnswerPicturePath";
     private final String QuestionPrimaty = "QuestionID";
     private final String QuestionText =  "QuestionText";
     private final String QuestionTable = "Question";
     private final String QuestionFolder = "QuestionFolder";
+    private final String QuestionPicture = "QuestionPicturePath";
     private final String FolderTable = "Folder";
     private final String FolderPrimary = "FolderID";
     private final String Elo = "Elo";
@@ -48,8 +50,9 @@ public class Database extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createFolder = "CREATE TABLE " + FolderTable + " (" + FolderPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FolderName + " VARCHAR(255));";
         String createQuestion = "CREATE TABLE " + QuestionTable + " (" + QuestionPrimaty + " INTEGER PRIMARY KEY AUTOINCREMENT, " + QuestionText + " TEXT, "
-                + Elo + " INTEGER, " + Solved + " INTEGER, " + QuestionFolder + " INTEGER);";
-        String createAnswer = "CREATE TABLE " + AnswerTable + " (" + AnswerPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + AnswerText + " TEXT, " + AnswerFolder + " INTEGER);";
+                + Elo + " INTEGER, " + Solved + " INTEGER, " + QuestionPicture + " VARCHAR(255), " + QuestionFolder + " INTEGER);";
+        String createAnswer = "CREATE TABLE " + AnswerTable + " (" + AnswerPrimary + " INTEGER PRIMARY KEY AUTOINCREMENT, " + AnswerText + " TEXT, " + AnswerPicture
+                + " VARCHAR(255), " + AnswerFolder + " INTEGER);";
         String createUserElo = "CREATE TABLE " + UserEloTable + " (" + UserElo + " INTEGER);";
 
         ContentValues content = new ContentValues();
@@ -370,6 +373,42 @@ public class Database extends SQLiteOpenHelper {
         }
         db.close();
         return true;
+    }
+
+    public void addPicturePath(String mCurrentPath, int QuestionOrAnswer){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        if(QuestionOrAnswer == 0){
+            values.put(QuestionPicture, mCurrentPath);
+            db.insert(QuestionTable, null, values);
+        }else if(QuestionOrAnswer == 1){
+            values.put(AnswerPicture, mCurrentPath);
+            db.insert(AnswerTable, null, values);
+        }
+
+        db.close();
+    }
+
+    public String getPicturePath(int Primary, int QuestionOrAnswer){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String path = null;
+
+        if(QuestionOrAnswer == 0) {
+            String sql = "SELECT * FROM " + QuestionTable + " WHERE " + QuestionPrimaty + " = " + Primary;
+            Cursor curs = db.rawQuery(sql, null);
+            if(curs.moveToFirst()){
+                path = curs.getString(4);
+            }
+        }else if(QuestionOrAnswer == 1){
+            String sql = "SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary + " = " + Primary;
+            Cursor curs = db.rawQuery(sql, null);
+            if(curs.moveToFirst()){
+                path = curs.getString(2);
+            }
+        }
+        db.close();
+        return path;
     }
 
 }
