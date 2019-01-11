@@ -37,8 +37,7 @@ public class Fullscreen extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus){
-            CameraAndImage cma = new CameraAndImage(mCurrentPhotoPath);
-            cma.setPic(mImageView);
+            setPic(mImageView, mCurrentPhotoPath);
         }
     }
 
@@ -46,4 +45,23 @@ public class Fullscreen extends AppCompatActivity {
         finish();
     }
 
+    public static void setPic(ImageView imageView, String mCurrentPhotoPath){
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        imageView.setImageBitmap(bitmap);
+    }
 }

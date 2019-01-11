@@ -90,32 +90,12 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
-            setPic(imageQuestion);
+            Fullscreen.setPic(imageQuestion, mCurrentPhotoPath);
         }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
-            setPic(imageAnswer);
+            Fullscreen.setPic(imageAnswer, mCurrentPhotoPath);
         }
     }
 
-    private void setPic(ImageView imageView){
-        File f = new File(mCurrentPhotoPath);
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        imageView.setImageBitmap(bitmap);
-    }
 
     public void addContent(View view) {
         Question = EditQuestion.getText().toString();
