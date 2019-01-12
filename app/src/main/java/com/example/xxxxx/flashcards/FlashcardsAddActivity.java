@@ -36,7 +36,8 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     private int FolderID;
     private final int REQUEST_IMAGE_QUESTION = 0;
     private final int REQUEST_IMAGE_ANSWER = 1;
-    private String mCurrentPhotoPath;
+    private String mCurrentPhotoPathQuestion;
+    private String mCurrentPhotoPathAnswer;
 
     private Database database;
 
@@ -91,11 +92,9 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
-            Fullscreen.setPic(imageQuestion, mCurrentPhotoPath);
-            database.addPicturePath(mCurrentPhotoPath, 0);
+            Fullscreen.setPic(imageQuestion, mCurrentPhotoPathQuestion);
         }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
-            Fullscreen.setPic(imageAnswer, mCurrentPhotoPath);
-            database.addPicturePath(mCurrentPhotoPath, 1);
+            Fullscreen.setPic(imageAnswer, mCurrentPhotoPathAnswer);
         }
     }
 
@@ -103,43 +102,29 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     public void addContent(View view) {
         Question = EditQuestion.getText().toString();
         Answer = EditAnswer.getText().toString();
-        database.addQuestionAndAnswer(Question, Answer, FolderID);
+        database.addQuestionAndAnswer(Question, Answer, FolderID, mCurrentPhotoPathQuestion, mCurrentPhotoPathAnswer);
 
         FlashcardsActivity.notifyChange();
         finish();
     }
 
     public void startAnswerFoto(View view) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(intent.resolveActivity(getPackageManager())!= null) {
-            File photoFile = null;
-            Uri photoURI;
-            try{
-                photoFile = createImageFile();
-            }catch(IOException ex){
-                Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
-            }
-            if(photoFile != null){
-                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                    photoURI = FileProvider.getUriForFile(this, "com.example.xxxxx.flashcards", photoFile);
-                }
-                else{
-                    photoURI = Uri.fromFile(photoFile);
-                }
-
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(intent, REQUEST_IMAGE_ANSWER);
-            }
-        }
+        Intent intent = createIntentPhoto(1);
+        startActivityForResult(intent, REQUEST_IMAGE_ANSWER);
     }
 
     public void startQuestionFoto(View view) {
+        Intent intent = createIntentPhoto(0);
+        startActivityForResult(intent, REQUEST_IMAGE_QUESTION);
+    }
+
+    public Intent createIntentPhoto(int QuestionOrAnswer){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(intent.resolveActivity(getPackageManager())!= null) {
             File photoFile = null;
             Uri photoURI;
             try{
-                photoFile = createImageFile();
+                photoFile = createImageFile(QuestionOrAnswer);
             }catch(IOException ex){
                 Log.d("flashcrad", ex.getCause().toString() +  " trying to open the File Uri failed");
             }
@@ -150,24 +135,35 @@ public class FlashcardsAddActivity extends AppCompatActivity {
                     photoURI = Uri.fromFile(photoFile);
                 }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(intent, REQUEST_IMAGE_QUESTION);
             }
         }
+        return intent;
     }
 
-    private File createImageFile() throws IOException {
+    private File createImageFile(int QuestionOrAnswer) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        if(QuestionOrAnswer == 0){
+            mCurrentPhotoPathQuestion = image.getAbsolutePath();
+        }else if(QuestionOrAnswer == 1){
+            mCurrentPhotoPathAnswer = image.getAbsolutePath();
+        }
 
-        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
     public void startFullscreen(View view) {
         Intent intent = new Intent(this, Fullscreen.class);
-        intent.putExtra("path" , mCurrentPhotoPath);
+        if(view.getId() == R.id.question_image){
+            intent.putExtra("path" ,mCurrentPhotoPathQuestion);
+        }else if(view.getId() == R.id.answer_image){
+            intent.putExtra("path", mCurrentPhotoPathAnswer);
+        }else{
+            intent.putExtra("path" , mCurrentPhotoPathQuestion);
+        }
+
         startActivity(intent);
     }
 }

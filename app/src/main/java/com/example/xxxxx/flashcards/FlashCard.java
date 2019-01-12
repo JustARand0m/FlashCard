@@ -6,12 +6,16 @@ public class FlashCard {
     private boolean Solved;
     private String Answer;
     private int index;
+    private String questionImage;
+    private String answerImage;
 
-    public FlashCard(String question, String answer, int iIndex, int elo, boolean solved){
-        setQuesitonAndAnswer(question, answer, iIndex, elo, solved);
+    public FlashCard(String question, String answer, int iIndex, int elo, boolean solved , String questionimage, String answerimage){
+        setQuesitonAndAnswer(question, answer, iIndex, elo, solved, questionimage, answerimage);
     }
 
-    public void setQuesitonAndAnswer(String question, String answer, int iIndex, int elo, boolean solved){
+    public void setQuesitonAndAnswer(String question, String answer, int iIndex, int elo, boolean solved, String questionimage, String answerimage){
+        questionImage = questionimage;
+        answerImage = answerimage;
         Answer = answer;
         Question = question;
         index = iIndex;
@@ -20,6 +24,14 @@ public class FlashCard {
     }
 
     public boolean getSolved(){return Solved;}
+
+    public String getQuestionImage(){
+        return questionImage;
+    }
+
+    public String getAnswerImage(){
+        return answerImage;
+    }
 
     public int getElo(){return Elo;}
 

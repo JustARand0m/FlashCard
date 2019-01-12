@@ -108,6 +108,8 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         String Row = null;
+        String questionPath = null;
+        String answerPath = null;
         String question = null;
         String answer = null;
         int elo = EloCalculator.default_elo;
@@ -119,11 +121,13 @@ public class Database extends SQLiteOpenHelper {
             question = cursorQuestion.getString(1);
             elo = cursorQuestion.getInt(2);
             solved = (0 != cursorQuestion.getInt(3));
+            questionPath = cursorQuestion.getString(4);
         }
 
         Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary +" = " + Row, null);
         while(cursorAnswer.moveToNext()){
             answer = cursorAnswer.getString(1);
+            answerPath = cursorAnswer.getString(2);
         }
 
         db.close();
@@ -138,7 +142,7 @@ public class Database extends SQLiteOpenHelper {
             Row = "0";
         }
 
-        return new FlashCard(question,  answer, Integer.valueOf(Row), elo, solved);
+        return new FlashCard(question,  answer, Integer.valueOf(Row), elo, solved, questionPath, answerPath);
     }
 
     public void changeSolved(int primary, boolean solved){
@@ -216,6 +220,8 @@ public class Database extends SQLiteOpenHelper {
         ArrayList<FlashCard> flashcards = new ArrayList<>();
 
         String Row = null;
+        String questionPath = null;
+        String answerPath = null;
         String question = null;
         String answer = null;
         int elo = EloCalculator.default_elo;
@@ -227,10 +233,12 @@ public class Database extends SQLiteOpenHelper {
             question = cursorQuestion.getString(1);
             elo = cursorQuestion.getInt(2);
             solved = (0 != cursorQuestion.getInt(3));
+            questionPath = cursorQuestion.getString(4);
 
             Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary +" = " + Row, null);
             while(cursorAnswer.moveToNext()){
                 answer = cursorAnswer.getString(1);
+                answerPath = cursorAnswer.getString(2);
             }
 
 
@@ -244,7 +252,7 @@ public class Database extends SQLiteOpenHelper {
                 Row = "0";
             }
 
-            FlashCard fl = new FlashCard(question, answer, Integer.valueOf(Row), elo, solved);
+            FlashCard fl = new FlashCard(question, answer, Integer.valueOf(Row), elo, solved, questionPath, answerPath);
             flashcards.add(fl);
         }
 
@@ -262,16 +270,18 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addQuestionAndAnswer(String question, String answer, int currentFolder){
+    public void addQuestionAndAnswer(String question, String answer, int currentFolder, String mCurrentPathQuestion, String mCurrentPathAnswer){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(QuestionPicture, mCurrentPathQuestion);
         values.put(QuestionText, question);
         values.put(Elo, EloCalculator.default_elo);
         values.put(Solved, 0);
         values.put(QuestionFolder, currentFolder);
         db.insert(QuestionTable, null, values);
         ContentValues values2 = new ContentValues();
+        values2.put(AnswerPicture, mCurrentPathAnswer);
         values2.put(AnswerText, answer);
         values2.put(AnswerFolder, currentFolder);
         db.insert(AnswerTable, null, values2);
@@ -314,6 +324,9 @@ public class Database extends SQLiteOpenHelper {
 
         Cursor cursorQuestion = db.rawQuery("SELECT * FROM " + QuestionTable + " WHERE " + QuestionPrimaty + " = " + PrimaryKey, null);
         Cursor cursorAnswer = db.rawQuery("SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary + " = " + PrimaryKey, null);
+
+        String questionPath = null;
+        String answerPath = null;
         String question = null;
         String answer = null;
         int elo = 1200;
@@ -321,16 +334,18 @@ public class Database extends SQLiteOpenHelper {
 
         while(cursorAnswer.moveToNext()){
             answer = cursorAnswer.getString(1);
+            answerPath = cursorAnswer.getString(2);
         }
 
         while(cursorQuestion.moveToNext()){
             question = cursorQuestion.getString(1);
             elo = cursorQuestion.getInt(2);
             solved = (0 != cursorQuestion.getInt(3));
+            questionPath = cursorQuestion.getString(4);
         }
 
         db.close();
-        return new FlashCard(question, answer, PrimaryKey, elo, solved);
+        return new FlashCard(question, answer, PrimaryKey, elo, solved, questionPath, answerPath);
     }
 
     public ArrayList<Integer> getAllFolderPrimary(){
@@ -375,20 +390,7 @@ public class Database extends SQLiteOpenHelper {
         return true;
     }
 
-    public void addPicturePath(String mCurrentPath, int QuestionOrAnswer){
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        if(QuestionOrAnswer == 0){
-            values.put(QuestionPicture, mCurrentPath);
-            db.insert(QuestionTable, null, values);
-        }else if(QuestionOrAnswer == 1){
-            values.put(AnswerPicture, mCurrentPath);
-            db.insert(AnswerTable, null, values);
-        }
-
-        db.close();
-    }
 
     public String getPicturePath(int Primary, int QuestionOrAnswer){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -409,6 +411,20 @@ public class Database extends SQLiteOpenHelper {
         }
         db.close();
         return path;
+    }
+
+    public void changePicturePath(int Primary, int QuestionOrAnswer, String path){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if(QuestionOrAnswer == 0){
+            String update = "UPDATE " + QuestionTable + " SET " + QuestionPicture + " = '" + path + "' WHERE " + QuestionPrimaty + " = " + Primary;
+            db.execSQL(update);
+        }else{
+            String update = "UPDATE " + AnswerTable + " SET " + AnswerPicture + " = '" + path + "' WHERE " + AnswerPrimary + " = " + Primary;
+            db.execSQL(update);
+        }
+
+        db.close();
     }
 
 }

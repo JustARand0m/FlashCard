@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
     private TextView textQuestion;
     private TextView textQuestionElo;
+    private ImageView imageQuestion;
     private FlashCard flashCard;
+    private int pos;
     public static final int REQUEST_CODE = 1;
 
     @Override
@@ -47,14 +50,25 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if(flashCard.getQuestionImage() != null){
+            Fullscreen.setPic(imageQuestion, flashCard.getQuestionImage());
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
         textQuestion = findViewById(R.id.question);
         textQuestionElo = findViewById(R.id.current_Elo);
+        imageQuestion = findViewById(R.id.quiz_question_image);
+
         Intent intent = getIntent();
-        int pos = intent.getIntExtra("pos", 0);
+        pos = intent.getIntExtra("pos", 0);
 
         Database db = Database.getInstance(this);
         flashCard = db.getRandomQuestion(pos);
@@ -75,7 +89,7 @@ public class QuizActivity extends AppCompatActivity {
 
     public void showAnswer(View view) {
         Intent intent = new Intent(this, QuizSolutionActivity.class);
-        intent.putExtra("answer", flashCard.getAnswer());
+        intent.putExtra("pos", flashCard.getIndex());
         startActivityForResult(intent, REQUEST_CODE);
     }
 

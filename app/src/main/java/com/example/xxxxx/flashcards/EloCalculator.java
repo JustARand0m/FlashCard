@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 
 public class EloCalculator {
     public static final int default_elo = 1200;
-    private static final int factorK = 60;
+    private static final int factorK = 80;
 
     private static double ErwartungswertElo(double first, double second){
         return 1/(1+Math.pow(10, (first - second)/400));

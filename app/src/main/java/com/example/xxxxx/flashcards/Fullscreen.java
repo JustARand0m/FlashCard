@@ -43,6 +43,7 @@ public class Fullscreen extends AppCompatActivity {
 
     public void closeActivity(View view) {
         finish();
+        System.gc();
     }
 
     public static void setPic(ImageView imageView, String mCurrentPhotoPath){
