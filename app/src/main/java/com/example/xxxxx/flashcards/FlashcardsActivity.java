@@ -15,7 +15,6 @@ public class FlashcardsActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private static RecyclerView.Adapter mAdapter;
     private int pos;
-    public static final int FLASCHARD_RESULT = 1;
 
     @Override
     protected void onResume() {
