@@ -32,8 +32,8 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
     private RadioButton rbUnsolved;
     private ImageView imageQuestion;
     private ImageView imageAnswer;
-    private String pathAnswer;
-    private String pathQuestion;
+    private String pathAnswer = null;
+    private String pathQuestion = null;
     private final int REQUEST_IMAGE_QUESTION = 0;
     private final int REQUEST_IMAGE_ANSWER = 1;
 
@@ -105,15 +105,17 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
     }
 
     public void saveChanges(View view) {
-        database.ChangeAnswer(Position, textAnswer.getText().toString());
-        database.ChangeQuestion(Position, textQuestion.getText().toString());
-        database.changePicturePath(Position, 0, pathQuestion);
-        database.changePicturePath(Position, 1, pathAnswer);
+        database.updateAnswer(Position, textAnswer.getText().toString());
+        database.updateQustion(Position, textQuestion.getText().toString());
+        if(pathQuestion != null)
+            database.changePicturePath(Position, 0, pathQuestion);
+        if(pathAnswer != null)
+            database.changePicturePath(Position, 1, pathAnswer);
 
         if(rbSolved.isChecked()){
-            database.changeSolved(fl.getIndex(), true);
+            database.updateSolved(fl.getIndex(), true);
         }else if(rbUnsolved.isChecked()){
-            database.changeSolved(fl.getIndex(), false);
+            database.updateSolved(fl.getIndex(), false);
         }
 
         FlashcardsActivity.notifyChange();

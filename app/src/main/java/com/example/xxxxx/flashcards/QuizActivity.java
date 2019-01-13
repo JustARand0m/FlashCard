@@ -35,13 +35,13 @@ public class QuizActivity extends AppCompatActivity {
         if(requestCode == REQUEST_CODE){
             Database database = Database.getInstance(this);
             if(resultCode == RESULT_OK){
-                database.ChangeEloUserWinner(flashCard.getIndex());
-                database.changeSolved(flashCard.getIndex(), true);
+                database.updateEloUserWinner(flashCard.getIndex());
+                database.updateSolved(flashCard.getIndex(), true);
 
                 recreate();
             }
             if(resultCode == RESULT_CANCELED){
-                database.ChangeEloUserLoser(flashCard.getIndex());
+                database.updateUserEloLoser(flashCard.getIndex());
 
                 recreate();
 
