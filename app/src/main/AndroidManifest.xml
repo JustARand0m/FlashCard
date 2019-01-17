@@ -23,6 +23,7 @@
         </activity>
         <activity
             android:name=".FlashcardsAddActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="NewCardActivity"
             android:parentActivityName=".FlashcardsActivity">
             <meta-data
@@ -32,6 +33,7 @@
         <activity
             android:name=".FlashcardsActivity"
             android:label="ChangeFlashcardActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

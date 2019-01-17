@@ -124,6 +124,8 @@ public class Database extends SQLiteOpenHelper {
         }
 
         db.close();
+        cursorAnswer.close();
+        cursorQuestion.close();
         if(Row == null){
             Row = "0";
         }
@@ -172,8 +174,9 @@ public class Database extends SQLiteOpenHelper {
             }
             FlashCard fl = new FlashCard(question, answer, Integer.valueOf(Row), elo, solved, questionPath, answerPath);
             flashcards.add(fl);
+            cursorAnswer.close();
         }
-
+        cursorQuestion.close();
         db.close();
         return flashcards;
     }
@@ -244,6 +247,8 @@ public class Database extends SQLiteOpenHelper {
             questionPath = cursorQuestion.getString(4);
         }
 
+        cursorAnswer.close();
+        cursorQuestion.close();
         db.close();
         return new FlashCard(question, answer, PrimaryKey, elo, solved, questionPath, answerPath);
     }
@@ -267,6 +272,8 @@ public class Database extends SQLiteOpenHelper {
         while(cursorKey.moveToNext()){
             keys.add(cursorKey.getInt(0));
         }
+
+        cursorKey.close();
         db.close();
         return keys;
     }
@@ -281,6 +288,7 @@ public class Database extends SQLiteOpenHelper {
             Folders.add(cursorFolder.getString(0));
         }
 
+        cursorFolder.close();
         db.close();
         return Folders;
     }
@@ -312,12 +320,14 @@ public class Database extends SQLiteOpenHelper {
             if(curs.moveToFirst()){
                 path = curs.getString(4);
             }
+            curs.close();
         }else if(QuestionOrAnswer == 1){
             String sql = "SELECT * FROM " + AnswerTable + " WHERE " + AnswerPrimary + " = " + Primary;
             Cursor curs = db.rawQuery(sql, null);
             if(curs.moveToFirst()){
                 path = curs.getString(2);
             }
+            curs.close();
         }
         db.close();
         return path;
@@ -348,6 +358,7 @@ public class Database extends SQLiteOpenHelper {
         }
 
         db.close();
+        cr.close();
         return elo;
     }
 
@@ -377,6 +388,8 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(updateWinner);
         db.execSQL(updateLoser);
 
+        loserCurs.close();
+        winnerCurs.close();
         db.close();
     }
 
@@ -406,6 +419,8 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(updateWinner);
         db.execSQL(updateLoser);
 
+        loserCurs.close();
+        winnerCurs.close();
         db.close();
     }
 

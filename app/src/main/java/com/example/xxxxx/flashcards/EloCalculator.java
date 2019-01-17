@@ -3,6 +3,7 @@ package com.example.xxxxx.flashcards;
 import android.content.Context;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 public class EloCalculator {
     public static final int default_elo = 1200;
@@ -21,8 +22,12 @@ public class EloCalculator {
     }
 
     public static void setEloInToolbar(ActionBar toolbar, Context context){
-        Database database = Database.getInstance(context);
-        int elo = database.getUserElo();
-        toolbar.setTitle("Current Elo: " + Integer.toString(elo));
+        if(toolbar != null) {
+            Database database = Database.getInstance(context);
+            int elo = database.getUserElo();
+            toolbar.setTitle("Current Elo: " + Integer.toString(elo));
+        }else{
+            Log.d("flashcard", "failed to set Elo in Toolbar");
+        }
     }
 }

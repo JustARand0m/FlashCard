@@ -59,6 +59,9 @@ public class Fullscreen extends AppCompatActivity {
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
+        if(targetH == 0 || targetW == 0){
+            return;
+        }
         int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
 
         bmOptions.inJustDecodeBounds = false;

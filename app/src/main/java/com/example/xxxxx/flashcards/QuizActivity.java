@@ -72,7 +72,7 @@ public class QuizActivity extends AppCompatActivity {
 
         Database db = Database.getInstance(this);
         flashCard = db.getRandomQuestion(pos);
-        if(flashCard.getIndex() == 0 && flashCard.getQuestion().equals(" ") && flashCard.getAnswer().equals(" ")){
+        if(flashCard.getIndex() == 0 && flashCard.getQuestion() == null && flashCard.getAnswer() == null){
             Toast.makeText(this, getString(R.string.plz_add_flashcard), Toast.LENGTH_SHORT).show();
             finish();
         }else {
