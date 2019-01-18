@@ -13,7 +13,9 @@ import android.view.View;
 
 public class FlashcardsActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
+    private RecyclerView mRecylerViewSolved;
     private static RecyclerView.Adapter mAdapter;
+    private static RecyclerView.Adapter mAdapterSolved;
     private int pos;
 
     @Override
@@ -36,11 +38,16 @@ public class FlashcardsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         pos = intent.getIntExtra("pos", 0);
 
+        mRecylerViewSolved = findViewById(R.id.sovledRecycler);
         mRecyclerView = findViewById(R.id.FlashcardRecycler);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecylerViewSolved.setLayoutManager(new LinearLayoutManager(this));
 
-        mAdapter = new FlashcardAdapter(this, pos);
+        mAdapter = new FlashcardAdapter(this, pos, false);
+        mAdapterSolved = new FlashcardAdapter(this, pos, true);
+
+        mRecylerViewSolved.setAdapter(mAdapterSolved);
         mRecyclerView.setAdapter(mAdapter);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -52,6 +59,7 @@ public class FlashcardsActivity extends AppCompatActivity {
 
     public static void notifyChange(){
         mAdapter.notifyDataSetChanged(); //error with first time crating
+        mAdapterSolved.notifyDataSetChanged();
     }
 
     public void startNewFlashCardActivity(View view) {

@@ -46,6 +46,7 @@ public class QuizActivity extends AppCompatActivity {
                 recreate();
 
             }
+            FlashcardsActivity.notifyChange();
         }
     }
 
@@ -94,5 +95,6 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void showNextQuestion(View view) {
+        recreate();
     }
 }

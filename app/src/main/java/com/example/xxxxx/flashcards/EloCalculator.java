@@ -14,11 +14,11 @@ public class EloCalculator {
     }
 
     public static int calculateWinner(int eloWinner, int eloLoser){
-        return (int) (eloWinner + factorK * (1 - ErwartungswertElo((double)eloWinner, (double)eloLoser)));
+        return (int) (eloWinner + factorK * (1 - ErwartungswertElo((double)eloLoser, (double)eloWinner)));
     }
 
     public static int calculateLoser(int eloLoser, int eloWinner){
-        return (int) (eloLoser + factorK * (0 - ErwartungswertElo((double)eloLoser, (double)eloWinner)));
+        return (int) (eloLoser + factorK * (0 - ErwartungswertElo((double)eloWinner, (double)eloLoser)));
     }
 
     public static void setEloInToolbar(ActionBar toolbar, Context context){

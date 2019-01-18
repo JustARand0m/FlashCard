@@ -17,13 +17,15 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.MyVi
     private Database db;
     private Context mContext;
     private int FolderID;
+    private boolean isSolved;
 
-    public FlashcardAdapter(Context context, int Folder){
+    public FlashcardAdapter(Context context, int Folder, boolean issolved){
         db = Database.getInstance(context);
         mInflater = LayoutInflater.from(context);
         FolderID = Folder;
-        flashCards = db.getAllFlashCardsOfTable(FolderID);
+        flashCards = db.getAllSolvedUnsolvedFlashcards(FolderID, issolved);
         mContext = context;
+        isSolved = issolved;
     }
 
     @NonNull
@@ -35,7 +37,7 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        flashCards = db.getAllFlashCardsOfTable(FolderID);
+        flashCards = db.getAllSolvedUnsolvedFlashcards(FolderID, isSolved);
         int CardID = flashCards.get(i).getIndex();
         String Question = flashCards.get(i).getQuestion();
 
@@ -46,11 +48,11 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.MyVi
 
     @Override
     public int getItemCount() {
-        flashCards = db.getAllFlashCardsOfTable(FolderID);
+        flashCards = db.getAllSolvedUnsolvedFlashcards(FolderID, isSolved);
         return flashCards.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
         public TextView textNr;
         public TextView textQuestion;
         public FlashcardAdapter mAdapter;

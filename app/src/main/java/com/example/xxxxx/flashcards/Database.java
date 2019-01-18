@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Database extends SQLiteOpenHelper {
@@ -178,6 +179,20 @@ public class Database extends SQLiteOpenHelper {
         }
         cursorQuestion.close();
         db.close();
+        return flashcards;
+    }
+
+    public ArrayList<FlashCard> getAllSolvedUnsolvedFlashcards(int folder, boolean solved){
+        ArrayList<FlashCard> flashcards = new ArrayList<>();
+
+        ArrayList<FlashCard> Fl = getAllFlashCardsOfTable(folder);
+        for(int i = 0; i < Fl.size(); i++) {
+            FlashCard flash = Fl.get(i);
+            if (flash.getSolved() == solved) {
+                flashcards.add(flash);
+            }
+        }
+
         return flashcards;
     }
 
