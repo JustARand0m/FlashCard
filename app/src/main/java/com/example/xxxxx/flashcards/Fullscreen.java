@@ -6,11 +6,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,15 +55,55 @@ public class Fullscreen extends AppCompatActivity {
         int targetW = imageView.getWidth();
         int targetH = imageView.getHeight();
 
+
+
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
+
+
         if(targetH == 0 || targetW == 0){
             return;
         }
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+
+
+        bitmap = RotatImage(mCurrentPhotoPath, bitmap);
+
+        imageView.setImageBitmap(bitmap);
+    }
+
+    public static void setPicFixedImageView(ImageView imageView, String mCurrentPhotoPath, boolean isLeft){
+
+        int targetW = imageView.getWidth();
+        //int targetH = imageView.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        int targetH = (targetW * photoH) / photoW;
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(targetW, targetH);
+        if(!isLeft)
+            layoutParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
+        imageView.setLayoutParams(layoutParams);
+
+        if(targetH == 0 || targetW == 0){
+            Log.d("flashcards", "image size/imageView size is below 0");
+            return;
+        }
+
         int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
 
         bmOptions.inJustDecodeBounds = false;

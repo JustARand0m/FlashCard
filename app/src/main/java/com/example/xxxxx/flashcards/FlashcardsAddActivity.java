@@ -92,9 +92,9 @@ public class FlashcardsAddActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
-            Fullscreen.setPic(imageQuestion, mCurrentPhotoPathQuestion);
+            Fullscreen.setPicFixedImageView(imageQuestion, mCurrentPhotoPathQuestion, true);
         }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
-            Fullscreen.setPic(imageAnswer, mCurrentPhotoPathAnswer);
+            Fullscreen.setPicFixedImageView(imageAnswer, mCurrentPhotoPathAnswer, false);
         }
     }
 

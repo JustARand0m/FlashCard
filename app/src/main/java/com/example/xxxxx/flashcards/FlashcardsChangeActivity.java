@@ -97,10 +97,10 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(pathQuestion != null){
-            Fullscreen.setPic(imageQuestion, pathQuestion);
+            Fullscreen.setPicFixedImageView(imageQuestion, pathQuestion, true);
         }
         if(pathAnswer != null){
-            Fullscreen.setPic(imageAnswer, pathAnswer);
+            Fullscreen.setPicFixedImageView(imageAnswer, pathAnswer, false);
         }
     }
 
@@ -153,6 +153,7 @@ public class FlashcardsChangeActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_QUESTION && resultCode == RESULT_OK){
             Fullscreen.setPic(imageQuestion, pathQuestion);
         }else if(requestCode == REQUEST_IMAGE_ANSWER && resultCode == RESULT_OK){
+
             Fullscreen.setPic(imageAnswer, pathAnswer);
         }
     }
