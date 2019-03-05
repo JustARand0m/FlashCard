@@ -23,6 +23,7 @@
         </activity>
         <activity
             android:name=".FlashcardsAddActivity"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="NewCardActivity"
             android:parentActivityName=".FlashcardsActivity">
@@ -42,6 +43,7 @@
         <activity
             android:name=".FlashcardsChangeActivity"
             android:label="FlashCardDeteils"
+            android:windowSoftInputMode="adjustPan"
             android:parentActivityName=".FlashcardsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

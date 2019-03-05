@@ -50,26 +50,7 @@ public class Fullscreen extends AppCompatActivity {
         System.gc();
     }
 
-    public static void setPic(ImageView imageView, String mCurrentPhotoPath){
-
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-
-
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-
-
-        if(targetH == 0 || targetW == 0){
-            return;
-        }
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
+    private static void setImageView(int scaleFactor, BitmapFactory.Options bmOptions, ImageView imageView, String mCurrentPhotoPath){
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
@@ -82,40 +63,59 @@ public class Fullscreen extends AppCompatActivity {
         imageView.setImageBitmap(bitmap);
     }
 
-    public static void setPicFixedImageView(ImageView imageView, String mCurrentPhotoPath, boolean isLeft){
+    public static void setPic(ImageView imageView, String mCurrentPhotoPath){
 
+        //getting the Dimension of the Image View in which the Picture will be embedded
         int targetW = imageView.getWidth();
-        //int targetH = imageView.getHeight();
+        int targetH = imageView.getHeight();
 
+        //creating the Bitmapoptions, also for Size of the Photo
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
+        if(targetH == 0 || targetW == 0){
+            return;
+        }
+        //calculating the scale if it is 0 or more
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        //finally setting the image
+        setImageView(scaleFactor, bmOptions, imageView, mCurrentPhotoPath);
+    }
+
+    public static void setPicFixedImageView(ImageView imageView, String mCurrentPhotoPath, boolean isLeft){
+
+        //getting the Width of the ImageView
+        int targetW = imageView.getWidth();
+
+        //getting bmOptions ready for especially for size calculations
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        //calculating the height with respects of width, for downscaling/upscaling
         int targetH = (targetW * photoH) / photoW;
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(targetW, targetH);
+        //bad style should be optimized!!
         if(!isLeft)
             layoutParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
         imageView.setLayoutParams(layoutParams);
 
+        //if there was an error with the imageView
         if(targetH == 0 || targetW == 0){
             Log.d("flashcards", "image size/imageView size is below 0");
             return;
         }
 
+        //setting the Image
         int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        setImageView(scaleFactor, bmOptions, imageView, mCurrentPhotoPath);
 
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-
-        bitmap = RotatImage(mCurrentPhotoPath, bitmap);
-
-        imageView.setImageBitmap(bitmap);
     }
 
     public static Bitmap RotatImage(String photoPath, Bitmap bitmap){
